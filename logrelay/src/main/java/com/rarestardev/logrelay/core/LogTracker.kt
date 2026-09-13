@@ -38,10 +38,10 @@ object LogTracker {
 
         // Initialize Retrofit with HTTP version of the URL for periodic sync
         val httpUrl = convertToHttpUrl(config.serverUrl)
-        RetrofitClient.init(httpUrl)
+        RetrofitClient.init(httpUrl, config.authToken)
 
         if (config.realtimeEnabled) {
-            webSocketManager = LogWebSocketManager(config.serverUrl)
+            webSocketManager = LogWebSocketManager(config.serverUrl, config.authToken)
             webSocketManager?.connect()
         }
 

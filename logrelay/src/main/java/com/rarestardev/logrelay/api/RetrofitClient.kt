@@ -9,9 +9,11 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
 
     private var baseUrl: String = ""
+    private var authToken: String? = null
 
-    fun init(url: String) {
+    fun init(url: String, token: String? = null) {
         baseUrl = if (url.endsWith("/")) url else "$url/"
+        authToken = token
     }
 
     private val okHttpClient: OkHttpClient by lazy {
@@ -23,6 +25,13 @@ object RetrofitClient {
             .readTimeout(20, TimeUnit.SECONDS)
             .writeTimeout(20, TimeUnit.SECONDS)
             .addInterceptor(logging)
+            .addInterceptor { chain ->
+                val requestBuilder = chain.request().newBuilder()
+                authToken?.let {
+                    requestBuilder.addHeader("Authorization", "Bearer $it")
+                }
+                chain.proceed(requestBuilder.build())
+            }
             .build()
     }
 

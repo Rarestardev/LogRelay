@@ -44,6 +44,7 @@ class MyApplication : Application() {
         val config = LogConfig(
             serverUrl = "wss://your-log-server.com", // WebSocket URL
             uploadPath = "api/logs/batch",         // Custom API path for sync (Optional)
+            authToken = "YOUR_BEARER_TOKEN",       // Optional Bearer token
             realtimeEnabled = true,                // Enable instant sync
             periodicSyncEnabled = true             // Enable 24h background sync
         )

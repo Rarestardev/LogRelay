@@ -13,7 +13,10 @@ import java.util.concurrent.TimeUnit
 /**
  * Manages WebSocket connection for real-time log transmission.
  */
-class LogWebSocketManager(private val serverUrl: String) {
+class LogWebSocketManager(
+    private val serverUrl: String,
+    private val authToken: String? = null
+) {
 
     private val client = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -28,9 +31,13 @@ class LogWebSocketManager(private val serverUrl: String) {
     fun connect() {
         if (webSocket != null) return
 
-        val request = Request.Builder()
-            .url(serverUrl)
-            .build()
+        val requestBuilder = Request.Builder().url(serverUrl)
+        
+        authToken?.let {
+            requestBuilder.addHeader("Authorization", "Bearer $it")
+        }
+
+        val request = requestBuilder.build()
 
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
