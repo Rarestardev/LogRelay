@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+AndroidProjectSystem.xml
+gradlew.bat
+vcs.xml
+compiler.xml
+.idea/
