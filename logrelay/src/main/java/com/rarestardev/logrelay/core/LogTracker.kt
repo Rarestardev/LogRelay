@@ -8,6 +8,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.*
 import com.rarestardev.logrelay.api.LogWebSocketManager
+import com.rarestardev.logrelay.api.RetrofitClient
 import com.rarestardev.logrelay.database.LogEntity
 import com.rarestardev.logrelay.database.LogRelayDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +36,10 @@ object LogTracker {
         this.config = config
         this.database = LogRelayDatabase.getInstance(context)
 
+        // Initialize Retrofit with HTTP version of the URL for periodic sync
+        val httpUrl = convertToHttpUrl(config.serverUrl)
+        RetrofitClient.init(httpUrl)
+
         if (config.realtimeEnabled) {
             webSocketManager = LogWebSocketManager(config.serverUrl)
             webSocketManager?.connect()
@@ -42,6 +47,17 @@ object LogTracker {
 
         if (config.periodicSyncEnabled) {
             schedulePeriodicSync(context)
+        }
+    }
+
+    /**
+     * Converts a WebSocket URL (ws/wss) to HTTP/HTTPS for Retrofit.
+     */
+    private fun convertToHttpUrl(url: String): String {
+        return when {
+            url.startsWith("wss://") -> url.replace("wss://", "https://")
+            url.startsWith("ws://") -> url.replace("ws://", "http://")
+            else -> url
         }
     }
 

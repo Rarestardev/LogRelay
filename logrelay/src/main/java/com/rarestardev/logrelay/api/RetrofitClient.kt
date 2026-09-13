@@ -8,7 +8,11 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    private const val BASE_URL = ""
+    private var baseUrl: String = ""
+
+    fun init(url: String) {
+        baseUrl = if (url.endsWith("/")) url else "$url/"
+    }
 
     private val okHttpClient: OkHttpClient by lazy {
         val logging = HttpLoggingInterceptor().apply {
@@ -23,8 +27,11 @@ object RetrofitClient {
     }
 
     private val retrofit: Retrofit by lazy {
+        if (baseUrl.isBlank()) {
+            throw IllegalStateException("RetrofitClient must be initialized with a base URL before use.")
+        }
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
