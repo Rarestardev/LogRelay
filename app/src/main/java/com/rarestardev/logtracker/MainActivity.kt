@@ -56,7 +56,13 @@ fun LogScreen(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(onClick = {
-                LogTracker.i(LogTags.UI, "User clicked on Info button")
+                val formattedLog = LogFormatter.format(
+                    appName = "LogTracker Demo",
+                    appVersion = "1.0.0",
+                    apiVersion = "v1",
+                    message = "User clicked on Info button"
+                )
+                LogTracker.i(LogTags.UI, formattedLog)
             }) {
                 Text("Log Info")
             }
