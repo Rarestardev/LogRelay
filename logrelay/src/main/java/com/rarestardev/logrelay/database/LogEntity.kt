@@ -1,4 +1,4 @@
-package com.rarestardev.logrelay
+package com.rarestardev.logrelay.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
