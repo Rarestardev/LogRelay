@@ -69,14 +69,17 @@ object LogTracker {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
+        val data = workDataOf("uploadPath" to (config?.uploadPath ?: "api/logs/batch"))
+
         val syncRequest = PeriodicWorkRequestBuilder<LogSyncWorker>(24, TimeUnit.HOURS)
             .setConstraints(constraints)
+            .setInputData(data)
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
             .build()
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "LogSyncWorker",
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.UPDATE,
             syncRequest
         )
     }

@@ -31,8 +31,8 @@ class LogSyncWorker(
 
         return@withContext try {
             // Attempt to upload the logs to the server
-            // Note: serverUrl should be configured in RetrofitClient or passed via inputData
-            val response = RetrofitClient.logApiRequest.uploadBatch(logs)
+            val path = inputData.getString("uploadPath") ?: "api/logs/batch"
+            val response = RetrofitClient.logApiRequest.uploadBatch(path, logs)
 
             if (response.isSuccessful) {
                 // If successful, delete the logs from the local database to save space
