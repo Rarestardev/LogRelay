@@ -1,3 +1,7 @@
+/**
+ * Author: rarestardev
+ * Website: rarestar.kavix-team.com
+ */
 package com.rarestardev.logtracker
 
 import android.os.Bundle
@@ -63,6 +67,14 @@ fun LogScreen(modifier: Modifier = Modifier) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Text("Log Error")
+            }
+            Button(onClick = {
+                LogTracker.d(LogTags.DATABASE, "Querying user records...")
+                LogTracker.w(LogTags.WORKER, "Background sync delayed due to power saving")
+                LogTracker.v(LogTags.INTERNAL, "Initializing WebSocket keep-alive")
+                LogTracker.wtf(LogTags.AUTH, "Security token corrupted!", IllegalStateException("Invalid Token"))
+            }) {
+                Text("Log All")
             }
         }
 

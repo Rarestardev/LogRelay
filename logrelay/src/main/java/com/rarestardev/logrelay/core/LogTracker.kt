@@ -1,3 +1,7 @@
+/**
+ * Author: rarestardev
+ * Website: rarestar.kavix-team.com
+ */
 package com.rarestardev.logrelay.core
 
 import android.content.Context

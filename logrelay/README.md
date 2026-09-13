@@ -55,7 +55,16 @@ Don't forget to register your `Application` class in `AndroidManifest.xml`:
 
 ### Logging Messages
 
-You can use the helper methods for different log levels:
+You can use the helper methods for different log levels. The library provides a set of standardized tags in `LogTags`:
+
+- `LogTags.UI`: UI events and interactions.
+- `LogTags.NETWORK`: Network requests and responses.
+- `LogTags.DATABASE`: Database operations.
+- `LogTags.AUTH`: Authentication flows.
+- `LogTags.APP_LIFECYCLE`: Application lifecycle events.
+- `LogTags.WORKER`: Background worker tasks.
+- `LogTags.ANALYTICS`: Analytics events.
+- `LogTags.INTERNAL`: Internal library logs.
 
 ```kotlin
 // Using standard tags
@@ -72,6 +81,12 @@ try {
 // Custom log
 LogTracker.log(tag = "CUSTOM_TAG", message = "My custom message", level = "VERBOSE")
 ```
+
+### Log Viewer UI
+
+The library includes an example of how to build a real-time log viewer. Here is how it looks in the sample app:
+
+![Log Tracker UI](file:///C:/Users/Ronak/AppData/Local/Google/AndroidStudio2026.1.2/projects/logtracker.466ee597/.artifacts/cd426b39-3713-4260-ac4e-c523e83bd3f4/screenshot.png)
 
 ### Displaying Logs in UI
 
@@ -98,4 +113,4 @@ fun LogList() {
 
 ## License
 
-(Include your license information here)
+This project is licensed under the MIT License - see the [LICENSE](file:///C:/Users/Ronak/AndroidStudioProjects/LogTracker/LICENSE) file for details.

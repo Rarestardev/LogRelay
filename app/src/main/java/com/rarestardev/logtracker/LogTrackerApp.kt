@@ -1,3 +1,7 @@
+/**
+ * Author: rarestardev
+ * Website: rarestar.kavix-team.com
+ */
 package com.rarestardev.logtracker
 
 import android.app.Application

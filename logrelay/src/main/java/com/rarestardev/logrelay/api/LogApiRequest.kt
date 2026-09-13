@@ -1,3 +1,7 @@
+/**
+ * @author rarestardev
+ * Website: rarestar.kavix-team.com
+ */
 package com.rarestardev.logrelay.api
 
 import com.rarestardev.logrelay.database.LogEntity
