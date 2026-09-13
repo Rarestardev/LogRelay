@@ -66,6 +66,19 @@ You can use the helper methods for different log levels. The library provides a 
 - `LogTags.ANALYTICS`: Analytics events.
 - `LogTags.INTERNAL`: Internal library logs.
 
+### Log Levels
+
+The library supports standard Android log levels via helper methods:
+
+| Method | Level | Description |
+| :--- | :--- | :--- |
+| `LogTracker.v()` | VERBOSE | Highest volume, most detailed info. |
+| `LogTracker.d()` | DEBUG | Useful during development. |
+| `LogTracker.i()` | INFO | General informational messages. |
+| `LogTracker.w()` | WARNING | Potentially harmful situations. |
+| `LogTracker.e()` | ERROR | Error events that might still allow the app to run. |
+| `LogTracker.wtf()` | ASSERT | Terrible failures that should never happen. |
+
 ```kotlin
 // Using standard tags
 LogTracker.i(LogTags.UI, "User opened the Home screen")
