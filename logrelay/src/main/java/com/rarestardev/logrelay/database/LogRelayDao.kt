@@ -18,7 +18,7 @@ interface LogRelayDao {
     @Query("DELETE FROM log_relay_table WHERE logId IN (:ids)")
     suspend fun deleteMultiLogs(ids: List<Long>)
 
-    @Query("DELETE FROm log_relay_table")
+    @Query("DELETE FROM log_relay_table")
     suspend fun clearAllLogs()
 
     @Query("SELECT COUNT(*) FROM log_relay_table")

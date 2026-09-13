@@ -49,42 +49,112 @@ fun LogScreen(modifier: Modifier = Modifier) {
     val logs by LogTracker.getAllLogs().collectAsState(initial = emptyList())
 
     Column(modifier = modifier.fillMaxSize()) {
+        // First row of buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Button(onClick = {
-                val formattedLog = LogFormatter.format(
-                    appName = "LogTracker Demo",
-                    appVersion = "1.0.0",
-                    apiVersion = "v1",
-                    message = "User clicked on Info button"
-                )
-                LogTracker.i(LogTags.UI, formattedLog)
-            }) {
-                Text("Log Info")
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    val formattedLog = LogFormatter.format(
+                        appName = "LogTracker Demo",
+                        appVersion = "1.0.0",
+                        apiVersion = "v1",
+                        message = "User clicked on Info button"
+                    )
+                    LogTracker.i(LogTags.UI, formattedLog)
+                }
+            ) {
+                Text("Info", fontSize = 12.sp)
             }
             Button(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    LogTracker.d(LogTags.DATABASE, "Querying user records...")
+                }
+            ) {
+                Text("Debug", fontSize = 12.sp)
+            }
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    LogTracker.v(LogTags.INTERNAL, "Initializing WebSocket keep-alive")
+                }
+            ) {
+                Text("Verbose", fontSize = 12.sp)
+            }
+        }
+
+        // Second row of buttons
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    LogTracker.w(LogTags.WORKER, "Background sync delayed due to power saving")
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+            ) {
+                Text("Warn", fontSize = 12.sp)
+            }
+            Button(
+                modifier = Modifier.weight(1f),
                 onClick = {
                     LogTracker.e(LogTags.NETWORK, "Mock network error occurred", Throwable("Network Timeout"))
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Log Error")
+                Text("Error", fontSize = 12.sp)
             }
-            Button(onClick = {
-                LogTracker.d(LogTags.DATABASE, "Querying user records...")
-                LogTracker.w(LogTags.WORKER, "Background sync delayed due to power saving")
-                LogTracker.v(LogTags.INTERNAL, "Initializing WebSocket keep-alive")
-                LogTracker.wtf(LogTags.AUTH, "Security token corrupted!", IllegalStateException("Invalid Token"))
-            }) {
-                Text("Log All")
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    LogTracker.wtf(LogTags.AUTH, "Security token corrupted!", IllegalStateException("Invalid Token"))
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("WTF", fontSize = 12.sp)
             }
         }
 
-        HorizontalDivider()
+        // Control buttons
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    LogTracker.i(LogTags.UI, "Multi-log sequence started")
+                    LogTracker.d(LogTags.DATABASE, "Querying user records...")
+                    LogTracker.w(LogTags.WORKER, "Background sync delayed due to power saving")
+                    LogTracker.v(LogTags.INTERNAL, "Initializing WebSocket keep-alive")
+                    LogTracker.wtf(LogTags.AUTH, "Security token corrupted!", IllegalStateException("Invalid Token"))
+                }
+            ) {
+                Text("Log All", fontSize = 12.sp)
+            }
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    LogTracker.clearAllLogs()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.outline)
+            ) {
+                Text("Clear All", fontSize = 12.sp)
+            }
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -101,15 +171,19 @@ fun LogScreen(modifier: Modifier = Modifier) {
 @Composable
 fun LogItem(log: LogEntity) {
     val color = when (log.level) {
-        "ERROR" -> MaterialTheme.colorScheme.errorContainer
+        "ERROR", "ASSERT" -> MaterialTheme.colorScheme.errorContainer
+        "WARNING" -> MaterialTheme.colorScheme.tertiaryContainer
         "INFO" -> MaterialTheme.colorScheme.primaryContainer
-        else -> MaterialTheme.colorScheme.secondaryContainer
+        "DEBUG" -> MaterialTheme.colorScheme.secondaryContainer
+        else -> MaterialTheme.colorScheme.surfaceVariant
     }
 
     val textColor = when (log.level) {
-        "ERROR" -> MaterialTheme.colorScheme.onErrorContainer
+        "ERROR", "ASSERT" -> MaterialTheme.colorScheme.onErrorContainer
+        "WARNING" -> MaterialTheme.colorScheme.onTertiaryContainer
         "INFO" -> MaterialTheme.colorScheme.onPrimaryContainer
-        else -> MaterialTheme.colorScheme.onSecondaryContainer
+        "DEBUG" -> MaterialTheme.colorScheme.onSecondaryContainer
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())

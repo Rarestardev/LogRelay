@@ -104,6 +104,15 @@ object LogTracker {
     }
 
     /**
+     * Clears all logs from the local database.
+     */
+    fun clearAllLogs() {
+        scope.launch {
+            database?.logRelayDao()?.clearAllLogs()
+        }
+    }
+
+    /**
      * Returns a Flow of all logs stored in the database, ordered by timestamp.
      */
     fun getAllLogs(): Flow<List<LogEntity>> {
