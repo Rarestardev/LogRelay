@@ -21,11 +21,11 @@ class LogTrackerApp : Application() {
         // In this library, the user can write logs, which are saved and sent via WebSocket.
         // We have two sync options: 24h background sync and real-time.
         val config = LogConfig(
-            serverUrl = "http://ronakfilm.dlmax.ir/", // Replace with your WebSocket server URL
+            serverUrl = "https://your_base_url.com/", // Replace with your WebSocket server URL
+            uploadPath = "api/your_upload_path",
+            authToken = "your_bearer_token",
             connectionMode = LogConnectionMode.NORMAL, // Send logs instantly
-            periodicSyncEnabled = true, // Sync unsent logs every 24 hours in background
-            uploadPath = "api/v1.5/logTracker",
-            authToken = "f5ee8be9edfc7d6a718134e924fb8eaf98ceb5fa77ab9f40db0f8b8326466fe8"
+            periodicSyncEnabled = true // Sync unsent logs every 24 hours in background
         )
 
         // 2. Initialize the library

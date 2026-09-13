@@ -5,15 +5,9 @@
 package com.rarestardev.logrelay.api
 
 import android.util.Log
-import com.google.gson.Gson
 import com.rarestardev.logrelay.core.LogConfig
-import com.rarestardev.logrelay.core.LogConnectionMode
 import com.rarestardev.logrelay.database.LogEntity
-import com.rarestardev.logrelay.model.UploadLogsRequest
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody.Companion.toResponseBody
 import java.util.concurrent.TimeUnit
 
 /**

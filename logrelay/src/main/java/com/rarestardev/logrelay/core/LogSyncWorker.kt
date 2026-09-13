@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
  * Worker that handles periodic syncing of logs to the server.
  * It fetches all logs from the local database and uploads them in a batch.
  */
-class LogSyncWorker(
+internal class LogSyncWorker(
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
