@@ -25,8 +25,11 @@ interface LogRelayDao {
     suspend fun count(): Long
 
     @Query("SELECT * FROM log_relay_table ORDER BY timestamp ASC")
-    suspend fun getAllLogs() : Flow<List<LogEntity>>
+    fun getAllLogs() : Flow<List<LogEntity>>
 
     @Query("SELECT * FROM log_relay_table ORDER BY timestamp ASC LIMIT :limit")
-    suspend fun getLogsWithLimit(limit: Int) : Flow<List<LogEntity>>
+    fun getLogsWithLimit(limit: Int) : Flow<List<LogEntity>>
+
+    @Query("SELECT * FROM log_relay_table ORDER BY timestamp ASC")
+    fun getAllLogsSync(): List<LogEntity>
 }

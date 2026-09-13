@@ -15,14 +15,16 @@ abstract class LogRelayDatabase : RoomDatabase() {
         private var INSTANCE: LogRelayDatabase? = null
 
         fun getInstance(context: Context): LogRelayDatabase {
-            return INSTANCE ?: synchronized(context) {
-                Room.databaseBuilder(
-                    context = context,
-                    name = DB_NAME,
-                    klass = LogRelayDatabase::class.java
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    LogRelayDatabase::class.java,
+                    DB_NAME
                 )
                     .fallbackToDestructiveMigration(true)
                     .build()
+                INSTANCE = instance
+                instance
             }
         }
     }
