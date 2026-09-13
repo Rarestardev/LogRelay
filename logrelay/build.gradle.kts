@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     id("androidx.room")
+    id("maven-publish")
 }
 
 android {
@@ -25,6 +26,24 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    publishing {
+        singleVariant("release")
+    }
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            afterEvaluate {
+                from(
+                    components["release"]
+                )
+            }
+            groupId = "com.github.rarestardev"
+            artifactId = "LogRelay"
+            version = "1.0.0"
+        }
+    }
 }
 
 room {
