@@ -87,7 +87,7 @@ LogTracker.clearAllLogs()
 
 The library includes a real-time log viewer. Here is how it looks in the sample app:
 
-![Log Tracker UI](https://github.com/Rarestardev/LogTracker/blob/master/Screenshot_20260913_123411.png)
+<img src="https://github.com/Rarestardev/LogTracker/blob/master/Screenshot_20260913_123411.png?raw=true" width="200" alt="Log Tracker UI" />
 
 LogTracker exposes a `Flow` of logs:
 
