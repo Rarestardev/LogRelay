@@ -42,8 +42,8 @@ publishing {
                 )
             }
             groupId = "com.github.rarestardev"
-            artifactId = "LogRelay"
-            version = "1.0.0"
+            artifactId = "log_relay"
+            version = "1.0.1"
         }
     }
 }
