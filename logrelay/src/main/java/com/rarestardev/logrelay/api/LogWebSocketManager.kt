@@ -6,24 +6,27 @@ package com.rarestardev.logrelay.api
 
 import android.util.Log
 import com.google.gson.Gson
+import com.rarestardev.logrelay.core.LogConfig
+import com.rarestardev.logrelay.core.LogConnectionMode
 import com.rarestardev.logrelay.database.LogEntity
+import com.rarestardev.logrelay.model.UploadLogsRequest
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import java.util.concurrent.TimeUnit
 
 /**
  * Manages WebSocket connection for real-time log transmission.
  */
-class LogWebSocketManager(
-    private val serverUrl: String,
-    private val authToken: String? = null
-) {
+internal class LogWebSocketManager(private val config: LogConfig) {
 
     private val client = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)
         .build()
 
     private var webSocket: WebSocket? = null
-    private val gson = Gson()
+    private val gson = RetrofitClient.gson
 
     /**
      * Connects to the WebSocket server.
@@ -31,9 +34,9 @@ class LogWebSocketManager(
     fun connect() {
         if (webSocket != null) return
 
-        val requestBuilder = Request.Builder().url(serverUrl)
-        
-        authToken?.let {
+        val requestBuilder = Request.Builder().url(config.serverUrl)
+
+        config.authToken?.let {
             requestBuilder.addHeader("Authorization", "Bearer $it")
         }
 
@@ -66,7 +69,10 @@ class LogWebSocketManager(
      */
     fun sendLog(logEntity: LogEntity) {
         val json = gson.toJson(logEntity)
-        webSocket?.send(json) ?: Log.w("LogWebSocketManager", "WebSocket not connected. Log cached in DB.")
+        webSocket?.send(json) ?: Log.w(
+            "LogWebSocketManager",
+            "WebSocket not connected. Log cached in DB."
+        )
     }
 
     /**

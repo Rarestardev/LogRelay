@@ -8,6 +8,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.*
 import com.rarestardev.logrelay.api.LogWebSocketManager
+import com.rarestardev.logrelay.api.LogWithHttpManager
 import com.rarestardev.logrelay.api.RetrofitClient
 import com.rarestardev.logrelay.database.LogEntity
 import com.rarestardev.logrelay.database.LogRelayDatabase
@@ -26,6 +27,7 @@ object LogTracker {
     private var config: LogConfig? = null
     private var database: LogRelayDatabase? = null
     private var webSocketManager: LogWebSocketManager? = null
+    private var httpManager: LogWithHttpManager? = null
     private val scope = CoroutineScope(Dispatchers.IO)
 
     /**
@@ -40,9 +42,14 @@ object LogTracker {
         val httpUrl = convertToHttpUrl(config.serverUrl)
         RetrofitClient.init(httpUrl, config.authToken)
 
-        if (config.realtimeEnabled) {
-            webSocketManager = LogWebSocketManager(config.serverUrl, config.authToken)
-            webSocketManager?.connect()
+        when (config.connectionMode) {
+            LogConnectionMode.WEB_SOCKET -> {
+                webSocketManager = LogWebSocketManager(config)
+                webSocketManager?.connect()
+            }
+            LogConnectionMode.NORMAL -> {
+                httpManager = LogWithHttpManager(config)
+            }
         }
 
         if (config.periodicSyncEnabled) {
@@ -80,7 +87,7 @@ object LogTracker {
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "LogSyncWorker",
             ExistingPeriodicWorkPolicy.UPDATE,
-            syncRequest
+            syncRequest,
         )
     }
 
@@ -99,9 +106,11 @@ object LogTracker {
             // Always save to database for persistence and periodic sync
             database?.logRelayDao()?.insertLog(entity)
 
-            // If realtime is enabled, attempt to send via WebSocket
-            if (config?.realtimeEnabled == true) {
-                webSocketManager?.sendLog(entity)
+            // Send via appropriate manager based on connection mode
+            when (config?.connectionMode) {
+                LogConnectionMode.WEB_SOCKET -> webSocketManager?.sendLog(entity)
+                LogConnectionMode.NORMAL -> httpManager?.sendLogWithHttp(listOf(entity))
+                null -> {}
             }
         }
     }
@@ -113,6 +122,14 @@ object LogTracker {
         scope.launch {
             database?.logRelayDao()?.clearAllLogs()
         }
+    }
+
+    /**
+     * Stops the LogTracker and closes active connections (like WebSocket).
+     * Call this when the app is shutting down or monitoring is no longer needed.
+     */
+    fun stop() {
+        webSocketManager?.disconnect()
     }
 
     /**

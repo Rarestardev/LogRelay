@@ -13,10 +13,11 @@ A robust, lifecycle-aware logging system for Android that supports real-time syn
 
 ## Features
 
-- **Real-time Sync**: Uses WebSockets to send logs to your server instantly.
-- **Background Sync**: Uses WorkManager to upload all cached logs every 24 hours (respects network constraints).
+- **Dual Connection Modes**: Choose between real-time **WebSocket** transmission or request-based **HTTP API** calls.
+- **Background Sync**: Uses WorkManager to upload all cached logs periodically (respects network constraints).
 - **Offline Persistence**: Powered by Room Database to ensure no log is lost, even if the app crashes or the internet is disconnected.
-- **Dynamic Configuration**: Configure server URLs, custom API paths, and sync options at runtime.
+- **ISO 8601 Timestamps**: Automatically formats log timestamps to standard ISO 8601 strings (e.g., `2026-09-13T13:56:00+03:30`) for easier server-side processing.
+- **Dynamic Configuration**: Configure server URLs, custom API paths, authentication tokens, and sync modes at runtime.
 - **Standardized Tags**: Centralized `LogTags` to categorize logs (UI, Network, Database, etc.).
 - **Reactive API**: Exposes logs as a `Flow` for easy UI integration.
 
@@ -42,11 +43,11 @@ class MyApplication : Application() {
         super.onCreate()
 
         val config = LogConfig(
-            serverUrl = "wss://your-log-server.com", // WebSocket URL
-            uploadPath = "api/logs/batch",         // Custom API path for sync (Optional)
+            serverUrl = "http://your-server.com",  // Server URL
+            uploadPath = "api/logs/batch",         // Custom API path for upload
             authToken = "YOUR_BEARER_TOKEN",       // Optional Bearer token
-            realtimeEnabled = true,                // Enable instant sync
-            periodicSyncEnabled = true             // Enable 24h background sync
+            connectionMode = LogConnectionMode.NORMAL, // NORMAL (HTTP) or WEB_SOCKET
+            periodicSyncEnabled = true             // Enable periodic background sync
         )
 
         LogTracker.initialize(this, config)
@@ -55,7 +56,26 @@ class MyApplication : Application() {
 ```
 
 > [!TIP]
-> The library automatically converts your `wss://` or `ws://` URL to `https://` or `http://` when communicating with the REST API for background syncing.
+> If you use `LogConnectionMode.NORMAL`, every log call will trigger an HTTP POST request. For high-frequency logging, consider using `WEB_SOCKET` or relying on periodic sync.
+
+### 2. Network Security (for HTTP)
+
+If you are using a non-HTTPS server, you must allow cleartext traffic in your `AndroidManifest.xml`:
+
+```xml
+<application
+    ...
+    android:networkSecurityConfig="@xml/network_security_config">
+```
+
+`res/xml/network_security_config.xml`:
+```xml
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">your-server.com</domain>
+    </domain-config>
+</network-security-config>
+```
 
 ## Usage
 
@@ -100,31 +120,36 @@ val logs by LogTracker.getAllLogs().collectAsState(initial = emptyList())
 
 ## Server Implementation
 
-For background syncing, your server needs to implement a batch upload endpoint.
+For both real-time (WebSocket) and batch syncing (HTTP), your server should handle the following JSON structure.
 
-### Batch Upload Endpoint
+### API Endpoint
 
-- **URL**: `{serverUrl}/{uploadPath}` (Default path: `api/logs/batch`)
+- **URL**: `{serverUrl}/{uploadPath}`
 - **Method**: `POST`
+- **Authentication**: `Authorization: Bearer <authToken>`
 - **Content-Type**: `application/json`
 
-### Payload Format (JSON Array)
+### Payload Format
+
+The data is sent as an object containing a list of logs. Timestamps are formatted as **ISO 8601** strings.
 
 ```json
-[
-  {
-    "logId": 1,
-    "tag": "UI",
-    "message": "User clicked on Info button",
-    "level": "INFO",
-    "throwable": null,
-    "timestamp": 1726215216819
-  }
-]
+{
+  "logs": [
+    {
+      "logId": 123,
+      "level": "ERROR",
+      "tag": "NETWORK",
+      "message": "API request failed",
+      "throwable": "java.net.SocketTimeoutException: timeout",
+      "timestamp": "2026-09-13T15:45:00+03:30"
+    }
+  ]
+}
 ```
 
 > [!NOTE]
-> The server should return a success status code (e.g., `200 OK`) to signal the library to clear these logs from the device.
+> For HTTP requests, the server should return a success status code (e.g., `200 OK`) to signal the library to clear the uploaded logs from the local device storage.
 
 ## Requirements
 

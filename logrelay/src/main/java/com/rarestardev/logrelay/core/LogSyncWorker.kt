@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.rarestardev.logrelay.api.RetrofitClient
 import com.rarestardev.logrelay.database.LogRelayDatabase
+import com.rarestardev.logrelay.model.UploadLogsRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -15,7 +16,7 @@ import kotlinx.coroutines.withContext
  */
 class LogSyncWorker(
     context: Context,
-    workerParams: WorkerParameters
+    workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
@@ -32,7 +33,7 @@ class LogSyncWorker(
         return@withContext try {
             // Attempt to upload the logs to the server
             val path = inputData.getString("uploadPath") ?: "api/logs/batch"
-            val response = RetrofitClient.logApiRequest.uploadBatch(path, logs)
+            val response = RetrofitClient.logApiRequest.uploadBatch(path, UploadLogsRequest(logs))
 
             if (response.isSuccessful) {
                 // If successful, delete the logs from the local database to save space

@@ -4,7 +4,7 @@
  */
 package com.rarestardev.logrelay.api
 
-import com.rarestardev.logrelay.database.LogEntity
+import com.rarestardev.logrelay.model.UploadLogsRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -15,6 +15,6 @@ interface LogApiRequest {
     @POST
     suspend fun uploadBatch(
         @Url url: String,
-        @Body logs: List<LogEntity>
+        @Body request: UploadLogsRequest
     ): Response<Unit>
 }
