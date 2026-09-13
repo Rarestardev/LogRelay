@@ -2,6 +2,9 @@
 
 A robust, lifecycle-aware logging system for Android that supports real-time synchronization, periodic background syncing, and offline persistence.
 
+# [![](https://jitpack.io/v/Rarestardev/LogRelay.svg)](https://jitpack.io/#Rarestardev/LogRelay)
+---
+
 ## Project Structure
 
 - **`:app`**: A sample Android application demonstrating how to integrate and use the library.
@@ -27,7 +30,7 @@ Add the library to your project's `build.gradle` dependencies:
 
 ```kotlin
 dependencies {
-    implementation(project(":logrelay"))
+    implementation("com.github.Rarestardev:LogRelay:1.0.1")
 }
 ```
 
